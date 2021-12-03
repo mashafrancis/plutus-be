@@ -1,6 +1,8 @@
 use actix_web::{web, App, HttpServer};
 
 mod handlers;
+mod models;
+mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,7 +17,7 @@ async fn main() -> std::io::Result<()> {
             .route("/users", web::post().to(handlers::add_user))
             .route("/users/{id}", web::delete().to(handlers::delete_user))
     })
-        .bind("127.0.0.1:8080")?
+        .bind("127.0.0.1:5000")?
         .run()
         .await
 }
