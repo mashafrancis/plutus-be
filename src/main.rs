@@ -32,22 +32,20 @@ use std::default::Default;
 use std::{env, io};
 
 mod config;
-mod users;
-mod schema;
 mod controllers;
 mod models;
+mod schema;
+mod users;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    dotenv::dotenv().expect("Failed to read .env file");
-    env::set_var("RUST_LOG", "actix_web=debug");
-    env_logger::init();
+	dotenv::dotenv().expect("Failed to read .env file");
+	env::set_var("RUST_LOG", "actix_web=debug");
+	env_logger::init();
 
-    let postgres_connection = Arc::new(config::database::configure().await);
-    let redis_client = Arc::new(config::redis::configure().await);
+	let postgres_connection = Arc::new(config::database::configure().await);
+	let redis_client = Arc::new(config::redis::configure().await);
 
-    let port = std::env::var("APP_PORT").expect("APP_PORT not found");
-    let address = format!("0.0.0.0:{}", port);
-
-
+	let port = std::env::var("APP_PORT").expect("APP_PORT not found");
+	let address = format!("0.0.0.0:{}", port);
 }
