@@ -25,7 +25,7 @@ pub fn migrate_and_config_db(url: &str) -> Pool {
 		.build(manager)
 		.expect("Failed to create pool.");
 
-	embed_migrations::run(&pool.get().expect("Failed to migrate."));
+	embedded_migrations::run(&pool.get().expect("Failed to migrate."));
 	pool
 }
 
