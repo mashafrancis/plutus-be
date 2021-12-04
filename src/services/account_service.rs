@@ -70,7 +70,6 @@ pub fn logout(
 			}
 		}
 	}
-
 	Err(ServiceError::new(
 		StatusCode::INTERNAL_SERVER_ERROR,
 		constants::MESSAGE_PROCESS_TOKEN_ERROR.to_string(),

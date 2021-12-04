@@ -1,4 +1,6 @@
-use crate::{config::database::Pool, constants, models::response::ResponseBody, utils::token_utils};
+use crate::{
+	config::database::Pool, constants, models::response::ResponseBody, utils::token_utils,
+};
 use actix_service::{Service, Transform};
 use actix_web::{
 	dev::{ServiceRequest, ServiceResponse},
@@ -74,10 +76,12 @@ where
 			if !authenticate_pass {
 				if let Some(pool) = req.app_data::<Data<Pool>>() {
 					info!("Connecting to database...");
-					if let Some(authentication_header) = req.headers().get(constants::AUTHORIZATION) {
+					if let Some(authentication_header) = req.headers().get(constants::AUTHORIZATION)
+					{
 						info!("Parsing authorization header...");
 						if let Ok(authentication_str) = authentication_header.to_str() {
-							if authentication_str.starts_with("bearer") || authentication_str.starts_with("Bearer")
+							if authentication_str.starts_with("bearer")
+								|| authentication_str.starts_with("Bearer")
 							{
 								info!("Parsing token...");
 								let token = authentication_str[6..authentication_str.len()].trim();

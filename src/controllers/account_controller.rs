@@ -55,7 +55,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_signup_ok() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -70,13 +70,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -91,7 +91,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_signup_duplicate_user() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -106,13 +106,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -121,7 +121,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -136,7 +136,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_ok_with_username() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -151,13 +151,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -166,7 +166,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(r#"{"username_or_email":"admin","password":"123456"}"#.as_bytes())
 			.send_request(&mut app)
 			.await;
@@ -176,7 +176,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_ok_with_email() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -191,13 +191,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -206,7 +206,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username_or_email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -218,7 +218,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_password_incorrect_with_username() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -233,13 +233,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -248,7 +248,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(r#"{"username_or_email":"admin","password":"password"}"#.as_bytes())
 			.send_request(&mut app)
 			.await;
@@ -258,7 +258,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_password_incorrect_with_email() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -273,13 +273,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"123456"}"#.as_bytes(),
 			)
@@ -288,7 +288,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username_or_email":"admin@gmail.com","password":"password"}"#.as_bytes(),
 			)
@@ -300,7 +300,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_user_not_found_with_username() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -315,13 +315,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"password"}"#
 					.as_bytes(),
@@ -331,7 +331,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(r#"{"username_or_email":"abc","password":"123456"}"#.as_bytes())
 			.send_request(&mut app)
 			.await;
@@ -341,7 +341,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_login_user_not_found_with_email() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -356,13 +356,13 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 
 		test::TestRequest::post()
 			.uri("/api/auth/signup")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(
 				r#"{"username":"admin","email":"admin@gmail.com","password":"password"}"#
 					.as_bytes(),
@@ -372,7 +372,7 @@ mod tests {
 
 		let resp = test::TestRequest::post()
 			.uri("/api/auth/login")
-			.set_header(header::ContentType::json())
+			.set(header::ContentType::json())
 			.set_payload(r#"{"username_or_email":"abc@gmail.com","password":"123456"}"#.as_bytes())
 			.send_request(&mut app)
 			.await;

@@ -15,7 +15,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_ping_ok() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		let mut app = test::init_service(
 			App::new()
@@ -30,7 +30,7 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(crate::config::app::config_services),
+				.configure(crate::config::app::config_routes),
 		)
 		.await;
 

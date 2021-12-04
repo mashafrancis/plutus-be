@@ -50,9 +50,9 @@ async fn main() -> io::Result<()> {
 	let app_host = env::var("APP_HOST").expect("APP_HOST not found.");
 	let app_port = std::env::var("APP_PORT").expect("APP_PORT not found");
 	let app_url = format!("{}:{}", &app_host, &app_port);
-	let db_url = env::var("DATABASE_URL").expect("DATABASE_URL not found.");
+	let db_url = env::var("DATABASE_URL".to_string()).expect("DATABASE_URL not found.");
 
-	let pool = config::database::migrate_and_config_db(db_url);
+	let pool = config::database::migrate_and_config_db(&db_url);
 
 	HttpServer::new(move || {
 		App::new()
@@ -66,7 +66,7 @@ async fn main() -> io::Result<()> {
 					.allowed_header(http::header::CONTENT_TYPE)
 					.max_age(3600),
 			)
-			.app_data(pool.clone())
+			.data(pool.clone())
 			.wrap(actix_web::middleware::Logger::default())
 			.wrap(crate::middleware::auth_middleware::Authentication) // Comment this line of code if you want to integrate with yew-address-book-frontend
 			.wrap_fn(|req, srv| srv.call(req).map(|res| res))
@@ -87,7 +87,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_startup_ok() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		HttpServer::new(move || {
 			App::new()
@@ -104,7 +104,7 @@ mod tests {
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap(crate::middleware::auth_middleware::Authentication)
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(config::app::config_services)
+				.configure(config::app::config_routes)
 		})
 		.bind("localhost:8000".to_string())
 		.unwrap()
@@ -115,7 +115,7 @@ mod tests {
 
 	#[actix_rt::test]
 	async fn test_startup_without_auth_middleware_ok() {
-		let pool = config::db::migrate_and_config_db(":memory:");
+		let pool = config::database::migrate_and_config_db(":memory:");
 
 		HttpServer::new(move || {
 			App::new()
@@ -131,7 +131,7 @@ mod tests {
 				.app_data(pool.clone())
 				.wrap(actix_web::middleware::Logger::default())
 				.wrap_fn(|req, srv| srv.call(req).map(|res| res))
-				.configure(config::app::config_services)
+				.configure(config::app::config_routes)
 		})
 		.bind("localhost:8001".to_string())
 		.unwrap()
